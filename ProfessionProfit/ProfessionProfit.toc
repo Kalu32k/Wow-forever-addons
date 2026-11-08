@@ -1,0 +1,14 @@
+## Interface: 11507, 20504, 30403, 40402, 50500, 110205
+## Title: Profession Profit
+## Notes: Listar de mest lönsamma recepten som din karaktär kan, baserat på AH-priser från Forever Guide (med Auctionator eller egen skanning som reserv).
+## Author: kalu32k
+## Version: 0.1.0
+## SavedVariables: ProfessionProfitDB
+## SavedVariablesPerCharacter: ProfessionProfitCharDB
+## OptionalDeps: ForeverGuide, Forever_Guide, Forever-Guide, Auctionator
+
+Core.lua
+Recipes.lua
+Prices.lua
+Scanner.lua
+UI.lua
