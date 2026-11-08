@@ -1,22 +1,22 @@
--- Profession Profit: AH-priser från Forever Guide och profitberäkning.
--- Alla AH-priser kommer från Forever Guides egen AH-skanning. Reagenser
--- jämförs också mot försäljarpriser som addonet lär sig när du öppnar
--- en försäljare (t.ex. tråd och flaskor som inte säljs på AH).
+-- Profession Profit: AH prices from Forever Guide and profit calculation.
+-- All AH prices come from Forever Guide's own AH scan. Reagents are also
+-- compared with vendor prices the addon learns when you open a vendor
+-- (e.g. thread and vials that are not sold on the AH).
 local _, PP = ...
 
 ---------------------------------------------------------------------------
 -- Forever Guide
 ---------------------------------------------------------------------------
--- Forever Guide har inget dokumenterat API för andra addons, så vi letar
--- upp det: först efter en funktion som ger ett pris för ett itemID, och
--- annars efter tabellen där det sparar sina skannade AH-priser.
+-- Forever Guide has no documented API for other addons, so we look for
+-- one: first a function that returns a price for an itemID, otherwise the
+-- table where it stores its scanned AH prices.
 
 local FG = {
-  addonName = nil,  -- mappnamn för Forever Guide, om det hittas
+  addonName = nil,  -- Forever Guide folder name, if found
   loaded = false,
-  fn = nil,         -- function(itemID) -> koppar
+  fn = nil,         -- function(itemID) -> copper
   fnPath = nil,
-  table = nil,      -- [itemID] = pris eller { ...pris... }
+  table = nil,      -- [itemID] = price or { ...price... }
   tablePath = nil,
   detected = false,
 }
@@ -72,7 +72,7 @@ local function keyToItemID(k)
   end
 end
 
--- Kandidater: globala tabeller vars namn liknar Forever Guide
+-- Candidates: global tables whose names look like Forever Guide
 local function candidateGlobals()
   local out, seen = {}, {}
   local function add(name)
@@ -102,7 +102,7 @@ local function candidateGlobals()
 end
 
 local function testFunction(fn, owner)
-  -- Testa med några vanliga föremål (Linen Cloth, Copper Ore, Peacebloom m.fl.)
+  -- Test with some common items (Linen Cloth, Copper Ore, Peacebloom etc.)
   local probes = { 2589, 2770, 2447, 2318, 765, 2592, 4306, 2835 }
   for _, id in ipairs(probes) do
     local ok, v = pcall(fn, id)
@@ -134,8 +134,8 @@ local function findFunction(cands)
   end
 end
 
--- Letar rekursivt efter den största tabellen som ser ut som [itemID] = pris.
--- Sökvägar som innehåller nuvarande realm/faktion får företräde.
+-- Recursively looks for the largest table that looks like [itemID] = price.
+-- Paths containing the current realm/faction are preferred.
 local function findPriceTable(cands)
   local realm = (GetRealmName() or ""):lower()
   local faction = (UnitFactionGroup("player") or ""):lower()
@@ -157,7 +157,7 @@ local function findPriceTable(cands)
     if items >= 10 and items >= total * 0.6 then
       local score = items * bonus
       if score > bestScore then best, bestPath, bestScore = t, path, score end
-      return -- tabellen är själv en pristabell, gå inte djupare
+      return -- this table is itself a price table, do not go deeper
     end
     for _, kv in ipairs(children) do
       local k, v = kv[1], kv[2]
@@ -187,14 +187,14 @@ end
 
 function PP:ForeverGuideStatus()
   if not FG.detected then self:DetectForeverGuide() end
-  if not FG.addonName then return "|cffff0000addonet hittades inte|r" end
-  local s = FG.addonName .. (FG.loaded and " (laddat)" or " (|cffff0000ej laddat|r)")
+  if not FG.addonName then return "|cffff0000addon not found|r" end
+  local s = FG.addonName .. (FG.loaded and " (loaded)" or " (|cffff0000not loaded|r)")
   if FG.fn then
-    return s .. ", pris-API: |cff00ff00" .. FG.fnPath .. "|r"
+    return s .. ", price API: |cff00ff00" .. FG.fnPath .. "|r"
   elseif FG.table then
-    return s .. ", pristabell: |cff00ff00" .. FG.tablePath .. "|r"
+    return s .. ", price table: |cff00ff00" .. FG.tablePath .. "|r"
   end
-  return s .. ", |cffffaa00inga priser hittade än – skanna AH med Forever Guide, sedan /pp fgdump|r"
+  return s .. ", |cffffaa00no prices found yet - scan the AH with Forever Guide, then /pp fgdump|r"
 end
 
 local function foreverPrice(itemID)
@@ -210,7 +210,7 @@ local function foreverPrice(itemID)
   end
 end
 
--- Felsökning: visa strukturen så att det går att anpassa addonet
+-- Troubleshooting: show the structure so the addon can be adapted
 function PP:DumpForeverGuide()
   self:DetectForeverGuide()
   self:Print("Forever Guide:", self:ForeverGuideStatus())
@@ -222,7 +222,7 @@ function PP:DumpForeverGuide()
       n = n + 1
       if n <= 25 then table.insert(keys, tostring(k) .. "=" .. type(v)) end
     end
-    local line = string.format("%s (%d nycklar): %s", c.name, n, table.concat(keys, ", "))
+    local line = string.format("%s (%d keys): %s", c.name, n, table.concat(keys, ", "))
     print("  " .. line)
     table.insert(dump.globals, line)
   end
@@ -232,23 +232,23 @@ function PP:DumpForeverGuide()
       n = n + 1
       if n > 5 then break end
       local id = keyToItemID(k)
-      print(string.format("  exempel: %s -> %s (%s)", tostring(k), self:Money(priceFromValue(v)),
+      print(string.format("  example: %s -> %s (%s)", tostring(k), self:Money(priceFromValue(v)),
         id and (GetItemInfo(id) or "?") or "?"))
     end
   end
   self.db.fgdump = dump
-  self:Print("Sparat i ProfessionProfitDB.fgdump (WTF/Account/<konto>/SavedVariables/ProfessionProfit.lua efter /reload).")
+  self:Print("Saved to ProfessionProfitDB.fgdump (WTF/Account/<account>/SavedVariables/ProfessionProfit.lua after /reload).")
 end
 
 ---------------------------------------------------------------------------
--- Gemensamt
+-- Shared
 ---------------------------------------------------------------------------
--- AH-pris per styck i koppar enligt Forever Guide, eller nil
+-- AH price per unit in copper according to Forever Guide, or nil
 function PP:GetAuctionPrice(itemID)
   return foreverPrice(itemID)
 end
 
--- Billigaste sättet att få tag på en reagens: AH eller försäljare
+-- Cheapest way to get a reagent: AH or vendor
 function PP:GetReagentPrice(itemID)
   local ah = self:GetAuctionPrice(itemID)
   local vendor = self.db.vendor and self.db.vendor[itemID]
@@ -256,8 +256,8 @@ function PP:GetReagentPrice(itemID)
   return ah or vendor
 end
 
--- Räknar ut profit för ett recept. Returnerar en tabell eller nil om
--- föremålet inte har något AH-pris (t.ex. soulbound saker).
+-- Calculates profit for a recipe. Returns a table, or nil if the item
+-- has no AH price (e.g. soulbound items).
 function PP:CalcRecipe(r)
   local sale = self:GetAuctionPrice(r.itemID)
   if not sale then return nil end
@@ -285,7 +285,7 @@ function PP:CalcRecipe(r)
   }
 end
 
--- Bygger listan över alla kända recept sorterade efter profit
+-- Builds the list of all known recipes sorted by profit
 function PP:BuildProfitList()
   local list = {}
   for prof, data in pairs(self.char.professions or {}) do
@@ -302,7 +302,7 @@ function PP:BuildProfitList()
   return list
 end
 
--- Forever Guides data kan ha ändrats efter en skanning hos auktionären
+-- Forever Guide's data may have changed after a scan at the auctioneer
 PP:On("AUCTION_HOUSE_CLOSED", function(self)
   FG.detected = false
   C_Timer.After(1, function() self:RefreshUI() end)

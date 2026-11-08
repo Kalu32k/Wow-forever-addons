@@ -1,4 +1,4 @@
--- Profession Profit: fönstret som listar de mest lönsamma recepten.
+-- Profession Profit: the window that lists the most profitable recipes.
 local _, PP = ...
 
 local ROW_HEIGHT = 20
@@ -40,21 +40,21 @@ local function createRow(parent, i)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     GameTooltip:SetHyperlink("item:" .. e.recipe.itemID)
     GameTooltip:AddLine(" ")
-    GameTooltip:AddDoubleLine("Pris på AH (Forever Guide)", PP:Money(e.sale), 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine("AH price (Forever Guide)", PP:Money(e.sale), 1, 1, 1, 1, 1, 1)
     if (e.recipe.numMade or 1) ~= 1 then
-      GameTooltip:AddDoubleLine("Antal per tillverkning", tostring(e.recipe.numMade), 1, 1, 1, 1, 1, 1)
+      GameTooltip:AddDoubleLine("Made per craft", tostring(e.recipe.numMade), 1, 1, 1, 1, 1, 1)
     end
-    GameTooltip:AddDoubleLine("Intäkt efter 5% AH-avgift", PP:Money(e.revenue), 1, 1, 1, 1, 1, 1)
-    GameTooltip:AddLine("Reagenser:", 1, 0.82, 0)
+    GameTooltip:AddDoubleLine("Revenue after 5% AH cut", PP:Money(e.revenue), 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddLine("Reagents:", 1, 0.82, 0)
     for _, rg in ipairs(e.recipe.reagents) do
       local id = rg.ids[1]
       local p = PP:GetReagentPrice(id)
       GameTooltip:AddDoubleLine(string.format("  %dx %s", rg.count, GetItemInfo(id) or ("#" .. id)),
         PP:Money(p and p * rg.count), 0.8, 0.8, 0.8, 1, 1, 1)
     end
-    GameTooltip:AddDoubleLine("Total kostnad", PP:Money(e.cost), 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine("Total cost", PP:Money(e.cost), 1, 1, 1, 1, 1, 1)
     GameTooltip:AddDoubleLine("Profit", PP:Money(e.profit), 1, 1, 1, 0, 1, 0)
-    GameTooltip:AddLine("Shift-klick: länka i chatten / sök på AH", 0.5, 0.5, 0.5)
+    GameTooltip:AddLine("Shift-click: search the AH / link in chat", 0.5, 0.5, 0.5)
     GameTooltip:Show()
   end)
   row:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -63,7 +63,7 @@ local function createRow(parent, i)
     if not e then return end
     local link = itemLink(e.recipe.itemID, e.recipe.name)
     if IsShiftKeyDown() then
-      -- Sök på AH om det är öppet, annars länka i chatten
+      -- Search the AH if it is open, otherwise link in chat
       if AuctionHouseFrame and AuctionHouseFrame:IsShown() and AuctionHouseFrame.SearchBar then
         AuctionHouseFrame.SearchBar.SearchBox:SetText(e.recipe.name)
         AuctionHouseFrame.SearchBar:StartSearch()
@@ -117,11 +117,11 @@ local function createUI()
   frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
   frame:SetClampedToScreen(true)
   frame:SetFrameStrata("HIGH")
-  tinsert(UISpecialFrames, "ProfessionProfitFrame") -- stäng med Escape
+  tinsert(UISpecialFrames, "ProfessionProfitFrame") -- close with Escape
 
   frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
   frame.title:SetPoint("TOP", 0, -5)
-  frame.title:SetText("Profession Profit – mest lönsamt av det du kan")
+  frame.title:SetText("Profession Profit - most profitable recipes you know")
 
   local header = CreateFrame("Frame", nil, frame)
   header:SetSize(WIDTH - 50, 16)
@@ -134,10 +134,10 @@ local function createUI()
     fs:SetText(text)
   end
   h(0, 24, "#", "RIGHT")
-  h(30, 220, "Föremål")
-  h(255, 90, "Yrke")
-  h(345, 85, "Kostnad", "RIGHT")
-  h(430, 85, "Intäkt", "RIGHT")
+  h(30, 220, "Item")
+  h(255, 90, "Profession")
+  h(345, 85, "Cost", "RIGHT")
+  h(430, 85, "Revenue", "RIGHT")
   h(515, 75, "Profit", "RIGHT")
 
   scroll = CreateFrame("ScrollFrame", "ProfessionProfitScroll", frame, "FauxScrollFrameTemplate")
@@ -156,7 +156,7 @@ local function createUI()
   local refresh = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
   refresh:SetSize(100, 22)
   refresh:SetPoint("BOTTOMLEFT", 12, 12)
-  refresh:SetText("Uppdatera")
+  refresh:SetText("Refresh")
   refresh:SetScript("OnClick", function()
     PP.FG.detected = false
     PP:RefreshUI()
@@ -181,13 +181,13 @@ function PP:RefreshUI()
   local msg
   if not self.FG.detected then self:DetectForeverGuide() end
   if not (self.FG.fn or self.FG.table) then
-    msg = "Hittar inga priser från Forever Guide. Skanna AH med Forever Guide och tryck Uppdatera."
+    msg = "No prices found from Forever Guide. Scan the AH with Forever Guide and press Refresh."
   elseif nRecipes == 0 then
-    msg = "Inga recept sparade. Öppna dina yrkesfönster en gång."
+    msg = "No recipes saved. Open each of your profession windows once."
   elseif #data == 0 then
-    msg = "Inga lönsamma recept hittades. Skanna AH med Forever Guide och tryck Uppdatera."
+    msg = "No profitable recipes found. Scan the AH with Forever Guide and press Refresh."
   else
-    msg = string.format("%d lönsamma av %d kända recept. Priser: Forever Guide. Min profit: %s",
+    msg = string.format("%d profitable of %d known recipes. Prices: Forever Guide. Min profit: %s",
       #data, nRecipes, self:Money(self.db.minProfit))
   end
   statusText:SetText(msg)
@@ -199,7 +199,7 @@ function PP:ToggleUI()
   if frame:IsShown() then frame:Hide() else frame:Show() end
 end
 
--- Föremålsnamn laddas asynkront; rita om när de kommer in
+-- Item names load asynchronously; redraw when they arrive
 PP:On("GET_ITEM_INFO_RECEIVED", function()
   if frame and frame:IsShown() and not PP.redrawPending then
     PP.redrawPending = true

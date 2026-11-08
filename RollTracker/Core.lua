@@ -1,9 +1,9 @@
--- Roll Tracker: håller koll på vad alla i gruppen väljer på varje drop.
+-- Roll Tracker: keeps track of what everyone in the group picks on each drop.
 --
--- Spelet skriver ut alla val i loot-chatten ("X has selected Need for: [föremål]").
--- Vi läser de meddelandena med spelets egna, översatta formatsträngar,
--- så det fungerar på alla språk och oberoende av vilket UI (Blizzard/ElvUI)
--- som visar själva roll-fönstren.
+-- The game prints every choice in loot chat ("X has selected Need for: [item]").
+-- We read those messages using the game's own localized format strings,
+-- so it works in every language and regardless of which UI (Blizzard/ElvUI)
+-- shows the roll frames themselves.
 local ADDON, RT = ...
 _G.RollTracker = RT
 
@@ -17,14 +17,14 @@ RT.CHOICES = {
   pass     = { label = "Pass",     color = "ff999999", order = 5 },
 }
 
-RT.drops = {}   -- nyaste först: { link, rollID, time, players = { [namn] = { choice, roll } }, winner, done }
+RT.drops = {}   -- newest first: { link, rollID, time, players = { [name] = { choice, roll } }, winner, done }
 
 function RT:Print(...)
   print("|cffff9933Roll Tracker|r:", ...)
 end
 
 ---------------------------------------------------------------------------
--- Formatsträng -> Lua-mönster (hanterar även "%1$s"-positioner)
+-- Format string -> Lua pattern (also handles "%1$s" positions)
 ---------------------------------------------------------------------------
 local function fmtToPattern(fmt)
   local out, order, i, n = { "^" }, {}, 1, 0
@@ -57,7 +57,7 @@ local function fmtToPattern(fmt)
   return table.concat(out), order
 end
 
--- Returnerar argumenten i formatsträngens ordning
+-- Returns the arguments in the format string's order
 local function matchFmt(msg, compiled)
   local caps = { msg:match(compiled.pattern) }
   if #caps == 0 then return nil end
@@ -66,8 +66,8 @@ local function matchFmt(msg, compiled)
   return args
 end
 
--- kind: "choice" (namn, länk), "self" (länk), "rolled" (tal, länk, namn),
---       "won" (namn, länk), "youwon" (länk), "allpassed" (länk)
+-- kind: "choice" (name, link), "self" (link), "rolled" (number, link, name),
+--       "won" (name, link), "youwon" (link), "allpassed" (link)
 local PATTERNS = {
   { g = "LOOT_ROLL_NEED",          kind = "choice", choice = "need" },
   { g = "LOOT_ROLL_GREED",         kind = "choice", choice = "greed" },
@@ -101,7 +101,7 @@ local function compilePatterns()
       table.insert(compiled, { pattern = pattern, order = order, kind = p.kind, choice = p.choice, fmt = fmt })
     end
   end
-  -- Längre/mer specifika mönster först så att t.ex. "_SELF_AUTO" inte tas av ett kortare
+  -- Longer/more specific patterns first so e.g. "_SELF_AUTO" is not taken by a shorter one
   table.sort(compiled, function(a, b) return #a.fmt > #b.fmt end)
 end
 RT._fmtToPattern = fmtToPattern
@@ -110,7 +110,7 @@ RT._fmtToPattern = fmtToPattern
 -- Drops
 ---------------------------------------------------------------------------
 local function itemKey(link)
-  -- Jämför på själva item-strängen så att färgkoder inte spelar roll
+  -- Compare on the item string itself so color codes do not matter
   return link and (link:match("|H(item:[^|]+)|h") or link) or "?"
 end
 
@@ -142,7 +142,7 @@ end
 local function shortName(name)
   if not name then return nil end
   name = name:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
-  -- Ta bort realm om det är samma realm som vår
+  -- Strip the realm if it is the same realm as ours
   local base, realm = name:match("^(.-)%-(.+)$")
   if base and realm == (GetRealmName() or ""):gsub("%s", "") then return base end
   return name
@@ -187,7 +187,7 @@ function RT:HandleLootMessage(msg)
   end
 end
 
--- Gruppmedlemmar (för att visa vilka som inte valt än)
+-- Group members (to show who has not picked yet)
 function RT:GroupMembers()
   local list = {}
   local n = GetNumGroupMembers and GetNumGroupMembers() or 0
@@ -207,7 +207,7 @@ function RT:GroupMembers()
   return list
 end
 
--- Klassfärg för en spelare i gruppen
+-- Class color for a player in the group
 function RT:ClassColor(name)
   local unit
   if name == playerName() then unit = "player" end
@@ -228,7 +228,7 @@ function RT:ClassColor(name)
   return name
 end
 
--- Räknar val för en drop: { need = n, greed = n, ... , waiting = n }
+-- Counts choices for a drop: { need = n, greed = n, ... , waiting = n }
 function RT:Counts(d)
   local counts = { need = 0, greed = 0, de = 0, transmog = 0, pass = 0, waiting = 0 }
   for _, p in pairs(d.players) do
@@ -277,8 +277,8 @@ f:SetScript("OnEvent", function(_, event, ...)
     RT.db = RollTrackerDB
     compilePatterns()
   elseif event == "PLAYER_LOGIN" then
-    compilePatterns() -- om ett språkpaket har ändrat strängarna
-    RT:Print("laddat" .. (RT:HasElvUI() and " (ElvUI hittat)" or "") .. ". Skriv |cffffff00/rt|r för att visa fönstret.")
+    compilePatterns() -- in case a language pack changed the strings
+    RT:Print("loaded" .. (RT:HasElvUI() and " (ElvUI detected)" or "") .. ". Type |cffffff00/rt|r to show the window.")
   elseif event == "CHAT_MSG_LOOT" then
     RT:HandleLootMessage((...))
   elseif event == "START_LOOT_ROLL" then
@@ -315,15 +315,15 @@ SlashCmdList.ROLLTRACKER = function(msg)
     RT:ToggleUI()
   elseif cmd == "auto" then
     RT.db.autoShow = not RT.db.autoShow
-    RT:Print("Visa automatiskt vid roll:", RT.db.autoShow and "på" or "av")
+    RT:Print("Show automatically on roll:", RT.db.autoShow and "on" or "off")
   elseif cmd == "clear" then
     wipe(RT.drops)
     RT:Changed()
-    RT:Print("Historiken rensad.")
+    RT:Print("History cleared.")
   else
-    RT:Print("Kommandon:")
-    print("  /rt        - visa/dölj fönstret")
-    print("  /rt auto   - slå på/av att fönstret öppnas när något ska rollas")
-    print("  /rt clear  - rensa historiken")
+    RT:Print("Commands:")
+    print("  /rt        - show/hide the window")
+    print("  /rt auto   - toggle opening the window automatically when a roll starts")
+    print("  /rt clear  - clear the history")
   end
 end

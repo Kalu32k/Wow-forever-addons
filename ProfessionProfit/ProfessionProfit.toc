@@ -1,6 +1,6 @@
 ## Interface: 11507, 20504, 30403, 40402, 50500, 110205
 ## Title: Profession Profit
-## Notes: Listar de mest lönsamma recepten som din karaktär kan, baserat på Forever Guides AH-skanning.
+## Notes: Lists the most profitable recipes your character knows, based on Forever Guide's auction house scan.
 ## Author: kalu32k
 ## Version: 0.1.0
 ## SavedVariables: ProfessionProfitDB

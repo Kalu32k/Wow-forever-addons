@@ -1,6 +1,6 @@
--- Profession Profit: läser in vilka recept karaktären kan.
--- Spelet ger bara ut receptlistan när yrkesfönstret är öppet, så vi sparar
--- den per karaktär varje gång fönstret öppnas/uppdateras.
+-- Profession Profit: reads which recipes the character knows.
+-- The game only provides the recipe list while the profession window is
+-- open, so we save it per character every time the window opens/updates.
 local _, PP = ...
 
 local function itemIDFromLink(link)
@@ -17,15 +17,15 @@ local function store(profName, recipes)
 end
 
 ---------------------------------------------------------------------------
--- Klassiskt API (Classic Era / TBC / Wrath): GetTradeSkill*
+-- Classic API (Classic Era / TBC / Wrath): GetTradeSkill*
 ---------------------------------------------------------------------------
 local function scanClassicTradeSkill()
   if not GetNumTradeSkills then return end
   local profName = GetTradeSkillLine and GetTradeSkillLine()
-  -- Visa inte någon annans länkade yrkesfönster som "ditt"
+  -- Do not treat someone else's linked profession window as "yours"
   if IsTradeSkillLinked and IsTradeSkillLinked() then return end
 
-  -- Expandera alla rubriker så att vi ser alla recept
+  -- Expand all headers so we see every recipe
   if ExpandTradeSkillSubClass then pcall(ExpandTradeSkillSubClass, 0) end
 
   local recipes = {}
@@ -48,7 +48,7 @@ local function scanClassicTradeSkill()
           if rid and count then
             table.insert(r.reagents, { ids = { rid }, count = count })
           else
-            complete = false -- data inte inladdad än
+            complete = false -- data not loaded yet
           end
         end
         if complete then recipes[name] = r end
@@ -58,7 +58,7 @@ local function scanClassicTradeSkill()
   store(profName, recipes)
 end
 
--- Classic Enchanting m.fl. använder "Craft"-fönstret
+-- Classic Enchanting etc. use the "Craft" window
 local function scanClassicCraft()
   if not GetNumCrafts then return end
   local profName = GetCraftDisplaySkillLine and GetCraftDisplaySkillLine()
@@ -67,7 +67,7 @@ local function scanClassicCraft()
   for i = 1, GetNumCrafts() do
     local name, _, craftType = GetCraftInfo(i)
     if name and craftType ~= "header" then
-      -- Enchants på utrustning ger inget föremål och kan inte säljas på AH
+      -- Gear enchants produce no item and cannot be sold on the AH
       local itemID = itemIDFromLink(GetCraftItemLink and GetCraftItemLink(i))
       if itemID then
         local r = { name = name, itemID = itemID, numMade = 1, reagents = {} }
@@ -89,7 +89,7 @@ local function scanClassicCraft()
 end
 
 ---------------------------------------------------------------------------
--- Modernt API: C_TradeSkillUI
+-- Modern API: C_TradeSkillUI
 ---------------------------------------------------------------------------
 local function scanModern()
   local T = C_TradeSkillUI
@@ -147,7 +147,7 @@ local pending = false
 local function scheduleScan(kind)
   if pending then return end
   pending = true
-  -- Vänta lite så att spelet hinner fylla i receptlistan
+  -- Wait a moment so the game can fill in the recipe list
   C_Timer.After(0.5, function()
     pending = false
     local ok, err = pcall(function()

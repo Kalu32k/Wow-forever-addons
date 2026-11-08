@@ -2,74 +2,73 @@
 
 ## ProfessionProfit
 
-Listar de **mest lönsamma sakerna du kan tillverka** med de recept din karaktär
-faktiskt har lärt sig, baserat på priser från **Forever Guide**s AH-skanning.
+Lists the **most profitable things you can craft** with the recipes your character has
+actually learned, based on prices from **Forever Guide**'s auction house scan.
 
 ### Installation
-1. Kopiera mappen `ProfessionProfit` till `World of Warcraft/<klient>/Interface/AddOns/`.
-2. Starta spelet. Om addonet står som "out of date", kryssa i *Load out of date AddOns*.
+1. Copy the `ProfessionProfit` folder to `World of Warcraft/<client>/Interface/AddOns/`.
+2. Start the game. If the addon shows as "out of date", tick *Load out of date AddOns*.
 
-### Användning
-1. **Öppna varje yrkesfönster en gång** (Tailoring, Alchemy, ...). Addonet sparar då
-   vilka recept karaktären kan. Gör om det när du lär dig nya recept.
-2. **Skanna AH med Forever Guide** som vanligt.
-3. Skriv **`/pp`** så visas listan, sorterad med högst profit först.
-   Håll musen över en rad för att se reagenser och kostnader. Shift-klicka för att
-   söka på föremålet i AH:t (eller länka det i chatten).
+### Usage
+1. **Open each profession window once** (Tailoring, Alchemy, ...). The addon then saves
+   which recipes the character knows. Do it again when you learn new recipes.
+2. **Scan the AH with Forever Guide** as usual.
+3. Type **`/pp`** to show the list, sorted by highest profit first.
+   Hover a row to see reagents and costs. Shift-click to search for the item on the AH
+   (or link it in chat).
 
-Profit = AH-pris × antal per tillverkning × 0,95 (AH:ts 5 %-avgift) − reagenskostnad.
-Reagenser räknas med det billigaste av AH-pris och försäljarpris. Försäljarpriser lär
-sig addonet själv när du öppnar en försäljare (t.ex. tråd och flaskor).
-Recept där någon reagens saknar pris, och föremål utan AH-pris (soulbound), visas inte.
+Profit = AH price × amount made per craft × 0.95 (the AH's 5 % cut) − reagent cost.
+Reagents are costed at the cheaper of the AH price and the vendor price. The addon learns
+vendor prices by itself when you open a vendor (e.g. thread and vials).
+Recipes where a reagent has no price, and items with no AH price (soulbound), are not shown.
 
-### Kommandon
-| Kommando | Vad det gör |
+### Commands
+| Command | What it does |
 |---|---|
-| `/pp` | Visa/dölj listan |
-| `/pp min 1g50s` | Visa bara recept med minst så här mycket profit |
-| `/pp status` | Visar om Forever Guides priser hittats och vilka recept som sparats |
-| `/pp fgdump` | Felsökning: visar hur Forever Guides data ser ut |
-| `/pp reset` | Glöm sparade recept för karaktären |
+| `/pp` | Show/hide the list |
+| `/pp min 1g50s` | Only show recipes with at least this much profit |
+| `/pp status` | Shows whether Forever Guide's prices were found and which recipes are saved |
+| `/pp fgdump` | Troubleshooting: shows what Forever Guide's data looks like |
+| `/pp reset` | Forget saved recipes for the character |
 
-### Hur Forever Guide-kopplingen fungerar
-Forever Guide har inget dokumenterat API för andra addons. ProfessionProfit letar därför
-själv upp det. Först söker det efter en prisfunktion, t.ex. `GetAuctionPrice(itemID)`.
-Annars söker det efter tabellen där Forever Guide sparar sina skannade priser
-(`[itemID] = pris`), och tabellen för din realm och faktion väljs i första hand.
-Alla AH-priser kommer **bara från Forever Guide**. Inga andra AH-addons används.
+### How the Forever Guide connection works
+Forever Guide has no documented API for other addons, so ProfessionProfit finds it by
+itself. First it looks for a price function, e.g. `GetAuctionPrice(itemID)`. Otherwise it
+looks for the table where Forever Guide stores its scanned prices (`[itemID] = price`),
+preferring the table for your realm and faction.
+All AH prices come **only from Forever Guide**. No other AH addons are used.
 
-Om `/pp status` säger att inga priser hittades fast du har skannat:
-kör `/pp fgdump`, gör `/reload` och skicka innehållet under `fgdump` i
-`WTF/Account/<konto>/SavedVariables/ProfessionProfit.lua`. Då kan kopplingen
-anpassas exakt efter Forever Guide.
+If `/pp status` says no prices were found even though you have scanned:
+run `/pp fgdump`, do `/reload` and send the contents under `fgdump` in
+`WTF/Account/<account>/SavedVariables/ProfessionProfit.lua`. The connection can then be
+adapted exactly to Forever Guide.
 
 ## RollTracker
 
-Visar **vad alla i gruppen valde – Need, Greed eller Pass** (och Disenchant/Transmog
-om spelet har det) på varje sak som droppas. Fungerar **med och utan ElvUI**.
+Shows **what everyone in the group picked – Need, Greed or Pass** (and Disenchant/Transmog
+if the game has them) on every item that drops. Works **with and without ElvUI**.
 
 ### Installation
-Kopiera mappen `RollTracker` till `Interface/AddOns/`.
+Copy the `RollTracker` folder to `Interface/AddOns/`.
 
-### Vad du ser
-- **Ett fönster** som öppnas av sig självt när något ska rollas. Där står varje drop
-  med vilka som valt vad, roll-siffror, vem som vann och vilka som **inte valt än**.
-  Namnen visas i klassfärg. Fönstret kan flyttas och ändras i storlek.
-- **En rad med siffror ovanför själva roll-fönstret**, t.ex. `Need: 1  Greed: 2  Pass: 1  Väntar: 1`.
-  Håll musen över raden för att se namnen. Det fungerar både på Blizzards roll-fönster
-  och på ElvUI:s.
+### What you see
+- **A window** that opens by itself when something is up for rolling. It lists each drop
+  with who picked what, roll numbers, who won and who **has not picked yet**.
+  Names are shown in class colors. The window can be moved and resized.
+- **A row of counts above the roll frame itself**, e.g. `Need: 1  Greed: 2  Pass: 1  Waiting: 1`.
+  Hover the row to see the names. This works on both Blizzard's roll frames and ElvUI's.
 
-Med ElvUI används ElvUI:s utseende (ram, typsnitt, knappar). Utan ElvUI används vanliga
-Blizzard-ramar.
+With ElvUI, ElvUI's look is used (frame, font, buttons). Without ElvUI, regular Blizzard
+frames are used.
 
-### Hur det fungerar
-Spelet skriver alla val i loot-chatten ("X has selected Greed for: [föremål]").
-RollTracker läser de raderna med spelets egna översatta texter, så det fungerar på
-alla språk och oavsett vilket UI som visar roll-fönstren.
+### How it works
+The game writes every choice in loot chat ("X has selected Greed for: [item]").
+RollTracker reads those lines using the game's own localized texts, so it works in every
+language and regardless of which UI shows the roll frames.
 
-### Kommandon
-| Kommando | Vad det gör |
+### Commands
+| Command | What it does |
 |---|---|
-| `/rt` | Visa/dölj fönstret |
-| `/rt auto` | Slå på/av att fönstret öppnas automatiskt vid roll |
-| `/rt clear` | Rensa historiken |
+| `/rt` | Show/hide the window |
+| `/rt auto` | Toggle opening the window automatically on rolls |
+| `/rt clear` | Clear the history |

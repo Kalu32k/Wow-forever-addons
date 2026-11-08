@@ -1,5 +1,5 @@
--- Roll Tracker: fönster med alla val + små siffror på själva roll-fönstren.
--- Fungerar med Blizzards roll-fönster och med ElvUI:s (ElvUI_LootRollFrameN).
+-- Roll Tracker: window with all choices + small counts on the roll frames.
+-- Works with Blizzard's roll frames and with ElvUI's (ElvUI_LootRollFrameN).
 local _, RT = ...
 
 local WIDTH, HEIGHT = 360, 300
@@ -10,16 +10,16 @@ local function choiceText(key, count)
   return string.format("|c%s%s: %d|r", c.color, c.label, count)
 end
 
--- Bygger texten för en drop
+-- Builds the text for a drop
 local function describeDrop(d)
   local lines = {}
   local status = ""
   if d.winner then
-    status = "  |cff00ff00Vinnare: " .. RT:ClassColor(d.winner) .. "|r"
+    status = "  |cff00ff00Winner: " .. RT:ClassColor(d.winner) .. "|r"
   elseif d.allPassed then
-    status = "  |cff999999Alla passade|r"
+    status = "  |cff999999Everyone passed|r"
   elseif d.active then
-    status = "  |cffffff00(pågår)|r"
+    status = "  |cffffff00(in progress)|r"
   end
   table.insert(lines, (d.link or "?") .. status)
 
@@ -46,13 +46,13 @@ local function describeDrop(d)
   local waiting = RT:Waiting(d)
   if #waiting > 0 and not d.done then
     for i, n in ipairs(waiting) do waiting[i] = RT:ClassColor(n) end
-    table.insert(lines, "   |cffff6666Väntar (" .. #waiting .. "):|r " .. table.concat(waiting, ", "))
+    table.insert(lines, "   |cffff6666Waiting (" .. #waiting .. "):|r " .. table.concat(waiting, ", "))
   end
   return table.concat(lines, "\n")
 end
 
 ---------------------------------------------------------------------------
--- Utseende: ElvUI om det finns, annars vanlig Blizzard-ram
+-- Look: ElvUI if present, otherwise a regular Blizzard frame
 ---------------------------------------------------------------------------
 local function skin(f)
   if RT:HasElvUI() and f.SetTemplate then
@@ -122,7 +122,7 @@ local function createUI()
   local clear = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
   clear:SetSize(60, 18)
   clear:SetPoint("RIGHT", close, "LEFT", -2, 0)
-  clear:SetText("Rensa")
+  clear:SetText("Clear")
   clear:SetScript("OnClick", function() wipe(RT.drops); RT:RefreshUI() end)
   if RT:HasElvUI() then
     local E = unpack(_G.ElvUI)
@@ -145,7 +145,7 @@ local function createUI()
   text:SetSpacing(2)
   elvFont(text, 11)
 
-  -- Dra i nedre högra hörnet för att ändra storlek
+  -- Drag the bottom-right corner to resize
   local grip = CreateFrame("Button", nil, frame)
   grip:SetSize(14, 14)
   grip:SetPoint("BOTTOMRIGHT", -2, 2)
@@ -169,7 +169,7 @@ function RT:RefreshUI()
   content:SetWidth(w)
   text:SetWidth(w)
   if #self.drops == 0 then
-    text:SetText("|cff999999Inga drops än. När något ska rollas syns allas val här.|r")
+    text:SetText("|cff999999No drops yet. When something is rolled on, everyone's choices show up here.|r")
   else
     local parts = {}
     for _, d in ipairs(self.drops) do table.insert(parts, describeDrop(d)) end
@@ -189,7 +189,7 @@ function RT:ToggleUI()
 end
 
 ---------------------------------------------------------------------------
--- Siffror direkt på roll-fönstren (Blizzard eller ElvUI)
+-- Counts directly on the roll frames (Blizzard or ElvUI)
 ---------------------------------------------------------------------------
 local function rollFrames()
   local out = {}
@@ -250,7 +250,7 @@ function RT:UpdateBadges()
           table.insert(parts, choiceText(k, c[k]))
         end
       end
-      if c.waiting > 0 then table.insert(parts, "|cffff6666Väntar: " .. c.waiting .. "|r") end
+      if c.waiting > 0 then table.insert(parts, "|cffff6666Waiting: " .. c.waiting .. "|r") end
       b.text:SetText(table.concat(parts, "  "))
       b:SetWidth(b.text:GetStringWidth() + 4)
       b.drop = d
@@ -261,7 +261,7 @@ function RT:UpdateBadges()
   end
 end
 
--- Roll-fönstren byggs ibland om efter att eventet kommit; uppdatera lite senare också
+-- Roll frames are sometimes rebuilt after the event fires; update again a bit later
 local ticker
 local origChanged = RT.Changed
 function RT:Changed()

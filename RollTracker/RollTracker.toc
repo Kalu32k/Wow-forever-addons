@@ -1,6 +1,6 @@
 ## Interface: 11507, 20504, 30403, 40402, 50500, 110205
 ## Title: Roll Tracker
-## Notes: Visar vad alla i gruppen valde (Need/Greed/Pass) på droppade saker. Fungerar med och utan ElvUI.
+## Notes: Shows what everyone in your group picked (Need/Greed/Pass) on dropped loot. Works with and without ElvUI.
 ## Author: kalu32k
 ## Version: 0.1.0
 ## SavedVariables: RollTrackerDB

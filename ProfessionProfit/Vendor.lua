@@ -1,8 +1,8 @@
--- Profession Profit: lär sig försäljarpriser för reagenser.
+-- Profession Profit: learns vendor prices for reagents.
 local _, PP = ...
 
--- Lär oss vad försäljare tar betalt, så att t.ex. tråd och flaskor
--- räknas med försäljarpris i stället för AH-pris.
+-- Learn what vendors charge, so that e.g. thread and vials are costed at
+-- the vendor price instead of the AH price.
 PP:On("MERCHANT_SHOW", function(self)
   for i = 1, GetMerchantNumItems() do
     local price, quantity, numAvailable, extendedCost
@@ -17,7 +17,7 @@ PP:On("MERCHANT_SHOW", function(self)
     end
     local link = GetMerchantItemLink(i)
     local id = link and tonumber(link:match("item:(%d+)"))
-    -- Bara obegränsade varor som kostar guld (inte tokens/honor)
+    -- Only unlimited goods that cost gold (not tokens/honor)
     if id and price and price > 0 and numAvailable == -1 and not extendedCost then
       self.db.vendor[id] = price / math.max(quantity or 1, 1)
     end
