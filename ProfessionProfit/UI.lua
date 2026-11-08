@@ -40,7 +40,7 @@ local function createRow(parent, i)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     GameTooltip:SetHyperlink("item:" .. e.recipe.itemID)
     GameTooltip:AddLine(" ")
-    GameTooltip:AddDoubleLine("Pris på AH (" .. PP:SourceLabel(e.source) .. ")", PP:Money(e.sale), 1, 1, 1, 1, 1, 1)
+    GameTooltip:AddDoubleLine("Pris på AH (Forever Guide)", PP:Money(e.sale), 1, 1, 1, 1, 1, 1)
     if (e.recipe.numMade or 1) ~= 1 then
       GameTooltip:AddDoubleLine("Antal per tillverkning", tostring(e.recipe.numMade), 1, 1, 1, 1, 1, 1)
     end
@@ -162,21 +162,8 @@ local function createUI()
     PP:RefreshUI()
   end)
 
-  local scanBtn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-  scanBtn:SetSize(100, 22)
-  scanBtn:SetPoint("LEFT", refresh, "RIGHT", 6, 0)
-  scanBtn:SetText("Skanna AH")
-  scanBtn:SetScript("OnClick", function() PP:StartScan() end)
-  scanBtn:SetScript("OnEnter", function(self)
-    GameTooltip:SetOwner(self, "ANCHOR_TOP")
-    GameTooltip:SetText("Egen AH-skanning")
-    GameTooltip:AddLine("Behövs bara om Forever Guide/Auctionator inte hittas.", 1, 1, 1, true)
-    GameTooltip:Show()
-  end)
-  scanBtn:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
   statusText = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
-  statusText:SetPoint("LEFT", scanBtn, "RIGHT", 10, 0)
+  statusText:SetPoint("LEFT", refresh, "RIGHT", 10, 0)
   statusText:SetPoint("RIGHT", frame, "RIGHT", -12, 0)
   statusText:SetJustifyH("LEFT")
   statusText:SetWordWrap(true)
@@ -192,13 +179,16 @@ function PP:RefreshUI()
     for _ in pairs(p.recipes) do nRecipes = nRecipes + 1 end
   end
   local msg
-  if nRecipes == 0 then
+  if not self.FG.detected then self:DetectForeverGuide() end
+  if not (self.FG.fn or self.FG.table) then
+    msg = "Hittar inga priser från Forever Guide. Skanna AH med Forever Guide och tryck Uppdatera."
+  elseif nRecipes == 0 then
     msg = "Inga recept sparade. Öppna dina yrkesfönster en gång."
   elseif #data == 0 then
     msg = "Inga lönsamma recept hittades. Skanna AH med Forever Guide och tryck Uppdatera."
   else
-    msg = string.format("%d lönsamma av %d kända recept. Källa: %s. Min profit: %s",
-      #data, nRecipes, self.db.source, self:Money(self.db.minProfit))
+    msg = string.format("%d lönsamma av %d kända recept. Priser: Forever Guide. Min profit: %s",
+      #data, nRecipes, self:Money(self.db.minProfit))
   end
   statusText:SetText(msg)
   update()

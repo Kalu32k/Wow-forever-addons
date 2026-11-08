@@ -1,11 +1,7 @@
--- Profession Profit: priskällor och profitberäkning.
---
--- Priskällor i "auto"-läge, i den här ordningen:
---   1. Forever Guide  (dess egen AH-skanning)
---   2. Auctionator    (om installerat)
---   3. Egen skanning  (/pp scan vid auktionären)
--- Reagenser jämförs också mot försäljarpriser som addonet lär sig
--- automatiskt när du öppnar en försäljare.
+-- Profession Profit: AH-priser från Forever Guide och profitberäkning.
+-- Alla AH-priser kommer från Forever Guides egen AH-skanning. Reagenser
+-- jämförs också mot försäljarpriser som addonet lär sig när du öppnar
+-- en försäljare (t.ex. tråd och flaskor som inte säljs på AH).
 local _, PP = ...
 
 ---------------------------------------------------------------------------
@@ -245,52 +241,11 @@ function PP:DumpForeverGuide()
 end
 
 ---------------------------------------------------------------------------
--- Auctionator
----------------------------------------------------------------------------
-function PP:HasAuctionator()
-  return Auctionator and Auctionator.API and Auctionator.API.v1
-     and Auctionator.API.v1.GetAuctionPriceByItemID and true or false
-end
-
-local function auctionatorPrice(itemID)
-  if not PP:HasAuctionator() then return nil end
-  local ok, v = pcall(Auctionator.API.v1.GetAuctionPriceByItemID, "ProfessionProfit", itemID)
-  if ok and type(v) == "number" and v > 0 then return v end
-end
-
----------------------------------------------------------------------------
--- Egen skanning
----------------------------------------------------------------------------
-local function ownPrice(itemID)
-  local realm = PP.db.prices[PP:RealmKey()]
-  local e = realm and realm[itemID]
-  if e and e.p and (time() - (e.t or 0)) <= PP.db.maxPriceAge then return e.p end
-end
-
----------------------------------------------------------------------------
 -- Gemensamt
 ---------------------------------------------------------------------------
-local SOURCES = {
-  forever = { fn = foreverPrice, label = "Forever Guide" },
-  auctionator = { fn = auctionatorPrice, label = "Auctionator" },
-  own = { fn = ownPrice, label = "Egen skanning" },
-}
-local AUTO_ORDER = { "forever", "auctionator", "own" }
-
--- AH-pris per styck i koppar, eller nil
+-- AH-pris per styck i koppar enligt Forever Guide, eller nil
 function PP:GetAuctionPrice(itemID)
-  local src = self.db.source
-  if src ~= "auto" and SOURCES[src] then
-    return SOURCES[src].fn(itemID), src
-  end
-  for _, key in ipairs(AUTO_ORDER) do
-    local p = SOURCES[key].fn(itemID)
-    if p then return p, key end
-  end
-end
-
-function PP:SourceLabel(key)
-  return SOURCES[key] and SOURCES[key].label or key
+  return foreverPrice(itemID)
 end
 
 -- Billigaste sättet att få tag på en reagens: AH eller försäljare
@@ -304,7 +259,7 @@ end
 -- Räknar ut profit för ett recept. Returnerar en tabell eller nil om
 -- föremålet inte har något AH-pris (t.ex. soulbound saker).
 function PP:CalcRecipe(r)
-  local sale, src = self:GetAuctionPrice(r.itemID)
+  local sale = self:GetAuctionPrice(r.itemID)
   if not sale then return nil end
   local cost, missing = 0, {}
   for _, rg in ipairs(r.reagents) do
@@ -322,7 +277,6 @@ function PP:CalcRecipe(r)
   local revenue = sale * (r.numMade or 1) * (1 - self.AH_CUT)
   return {
     sale = sale,
-    source = src,
     cost = cost,
     revenue = revenue,
     profit = revenue - cost,

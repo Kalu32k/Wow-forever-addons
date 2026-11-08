@@ -27,9 +27,7 @@ Recept där någon reagens saknar pris, och föremål utan AH-pris (soulbound), 
 |---|---|
 | `/pp` | Visa/dölj listan |
 | `/pp min 1g50s` | Visa bara recept med minst så här mycket profit |
-| `/pp source auto\|forever\|auctionator\|own` | Välj priskälla (standard `auto`) |
-| `/pp scan` | Egen AH-skanning (reserv, kräver öppet AH) |
-| `/pp status` | Visar vilka priskällor som hittats och sparade recept |
+| `/pp status` | Visar om Forever Guides priser hittats och vilka recept som sparats |
 | `/pp fgdump` | Felsökning: visar hur Forever Guides data ser ut |
 | `/pp reset` | Glöm sparade recept för karaktären |
 
@@ -38,8 +36,7 @@ Forever Guide har inget dokumenterat API för andra addons. ProfessionProfit let
 själv upp det. Först söker det efter en prisfunktion, t.ex. `GetAuctionPrice(itemID)`.
 Annars söker det efter tabellen där Forever Guide sparar sina skannade priser
 (`[itemID] = pris`), och tabellen för din realm och faktion väljs i första hand.
-I `auto`-läge används Auctionator och sedan den egna skanningen om Forever Guide inte
-har något pris.
+Alla AH-priser kommer **bara från Forever Guide**. Inga andra AH-addons används.
 
 Om `/pp status` säger att inga priser hittades fast du har skannat:
 kör `/pp fgdump`, gör `/reload` och skicka innehållet under `fgdump` i

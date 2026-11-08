@@ -5,10 +5,8 @@ _G.ProfessionProfit = PP
 PP.AH_CUT = 0.05 -- AH tar 5% av försäljningen
 
 local defaults = {
-  source = "auto",     -- auto | forever | auctionator | own
   minProfit = 0,       -- i koppar
-  maxPriceAge = 7 * 24 * 3600, -- egen skanning: ignorera priser äldre än så här
-  prices = {},         -- [realm-faktion][itemID] = { p = koppar, t = tid }
+  vendor = {},         -- [itemID] = försäljarpris per styck (inlärt)
 }
 
 local function applyDefaults(dst, src)
@@ -90,6 +88,8 @@ PP:On("ADDON_LOADED", function(self, name)
   ProfessionProfitDB = ProfessionProfitDB or {}
   ProfessionProfitCharDB = ProfessionProfitCharDB or {}
   applyDefaults(ProfessionProfitDB, defaults)
+  -- Rensa data från äldre versioner som hade andra priskällor
+  ProfessionProfitDB.source, ProfessionProfitDB.prices, ProfessionProfitDB.maxPriceAge = nil, nil, nil
   ProfessionProfitCharDB.professions = ProfessionProfitCharDB.professions or {}
   self.db = ProfessionProfitDB
   self.char = ProfessionProfitCharDB
@@ -102,13 +102,12 @@ end)
 local function help()
   PP:Print("Kommandon:")
   print("  /pp                 - visa/dölj profit-listan")
-  print("  /pp scan            - skanna AH själv (måste stå vid auktionären)")
-  print("  /pp source <auto|forever|auctionator|own> - välj priskälla")
   print("  /pp min <belopp>    - lägsta profit som visas, t.ex. /pp min 1g50s")
   print("  /pp status          - visa vilka priskällor som hittats och kända recept")
   print("  /pp fgdump          - visa hur Forever Guides data ser ut (felsökning)")
   print("  /pp reset           - glöm sparade recept för den här karaktären")
   print("Öppna varje yrkesfönster en gång så sparas dina recept.")
+  print("Priserna kommer från Forever Guide – skanna AH med Forever Guide först.")
 end
 
 SLASH_PROFESSIONPROFIT1 = "/pp"
@@ -120,17 +119,6 @@ SlashCmdList.PROFESSIONPROFIT = function(msg)
     PP:ToggleUI()
   elseif cmd == "help" then
     help()
-  elseif cmd == "scan" then
-    PP:StartScan()
-  elseif cmd == "source" then
-    local s = rest:lower()
-    if s == "auto" or s == "forever" or s == "auctionator" or s == "own" then
-      PP.db.source = s
-      PP:Print("Priskälla:", s)
-      PP:RefreshUI()
-    else
-      PP:Print("Okänd källa. Använd auto, forever, auctionator eller own.")
-    end
   elseif cmd == "min" then
     local v = PP:ParseMoney(rest)
     if v then
@@ -155,12 +143,9 @@ end
 
 function PP:PrintStatus()
   self:Print("Forever Guide:", self:ForeverGuideStatus())
-  self:Print("Auctionator:", self:HasAuctionator() and "|cff00ff00hittad|r" or "|cffff0000saknas|r")
-  local own = self.db.prices[self:RealmKey()]
   local n = 0
-  if own then for _ in pairs(own) do n = n + 1 end end
-  self:Print("Egen skanning:", n, "föremål sparade för", self:RealmKey())
-  self:Print("Vald källa:", self.db.source)
+  for _ in pairs(self.db.vendor) do n = n + 1 end
+  self:Print("Inlärda försäljarpriser:", n)
   for prof, data in pairs(self.char.professions) do
     local c = 0
     for _ in pairs(data.recipes) do c = c + 1 end
