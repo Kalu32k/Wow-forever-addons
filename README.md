@@ -42,3 +42,34 @@ Om `/pp status` säger att inga priser hittades fast du har skannat:
 kör `/pp fgdump`, gör `/reload` och skicka innehållet under `fgdump` i
 `WTF/Account/<konto>/SavedVariables/ProfessionProfit.lua`. Då kan kopplingen
 anpassas exakt efter Forever Guide.
+
+## RollTracker
+
+Visar **vad alla i gruppen valde – Need, Greed eller Pass** (och Disenchant/Transmog
+om spelet har det) på varje sak som droppas. Fungerar **med och utan ElvUI**.
+
+### Installation
+Kopiera mappen `RollTracker` till `Interface/AddOns/`.
+
+### Vad du ser
+- **Ett fönster** som öppnas av sig självt när något ska rollas. Där står varje drop
+  med vilka som valt vad, roll-siffror, vem som vann och vilka som **inte valt än**.
+  Namnen visas i klassfärg. Fönstret kan flyttas och ändras i storlek.
+- **En rad med siffror ovanför själva roll-fönstret**, t.ex. `Need: 1  Greed: 2  Pass: 1  Väntar: 1`.
+  Håll musen över raden för att se namnen. Det fungerar både på Blizzards roll-fönster
+  och på ElvUI:s.
+
+Med ElvUI används ElvUI:s utseende (ram, typsnitt, knappar). Utan ElvUI används vanliga
+Blizzard-ramar.
+
+### Hur det fungerar
+Spelet skriver alla val i loot-chatten ("X has selected Greed for: [föremål]").
+RollTracker läser de raderna med spelets egna översatta texter, så det fungerar på
+alla språk och oavsett vilket UI som visar roll-fönstren.
+
+### Kommandon
+| Kommando | Vad det gör |
+|---|---|
+| `/rt` | Visa/dölj fönstret |
+| `/rt auto` | Slå på/av att fönstret öppnas automatiskt vid roll |
+| `/rt clear` | Rensa historiken |

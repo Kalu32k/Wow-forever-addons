@@ -1,0 +1,10 @@
+## Interface: 11507, 20504, 30403, 40402, 50500, 110205
+## Title: Roll Tracker
+## Notes: Visar vad alla i gruppen valde (Need/Greed/Pass) på droppade saker. Fungerar med och utan ElvUI.
+## Author: kalu32k
+## Version: 0.1.0
+## SavedVariables: RollTrackerDB
+## OptionalDeps: ElvUI
+
+Core.lua
+UI.lua
