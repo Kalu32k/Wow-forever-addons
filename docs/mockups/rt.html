@@ -1,0 +1,45 @@
+<html><head><link rel="stylesheet" href="base.css"><style>
+.roll{position:absolute;width:330px;background:rgba(8,8,10,.9);border:1px solid #000;box-shadow:0 0 0 1px #3a3a3a;display:flex;align-items:center;gap:8px;padding:4px}
+.icon{width:36px;height:36px;border:1px solid #0070dd;background:linear-gradient(135deg,#456,#123)}
+.bar{flex:1}
+.timer{height:6px;background:#222;margin-top:4px}.timer div{height:100%;background:#ffd100;width:62%}
+.rb{width:24px;height:24px;border-radius:4px;background:#333;border:1px solid #666;text-align:center;line-height:22px;font-size:13px}
+.badge{position:absolute;font-size:12px;text-shadow:0 1px 1px #000}
+.rtw{position:absolute;width:420px}
+.rtw .head{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;color:#ffd100;font-weight:bold}
+.rtw .body{padding:4px 10px 12px;font-size:12px;line-height:1.55}
+.cls-mage{color:#3fc7eb}.cls-war{color:#c69b6d}.cls-pri{color:#fff}.cls-rog{color:#fff468}.cls-hun{color:#aad372}.cls-pal{color:#f48cba}.cls-lock{color:#8788ee}
+.small{font-size:11px;padding:2px 8px;border:1px solid #555;background:#222;color:#ddd}
+.lbl{position:absolute;color:#ccd;font-size:12px;font-weight:bold}
+</style></head><body><div class="scene" style="width:1000px;height:325px">
+<div class="lbl" style="left:34px;top:30px">Blizzard roll frame</div>
+<div class="badge" style="left:36px;top:56px"><span class="green">Need: 1</span>&nbsp;&nbsp;<span class="gold">Greed: 2</span>&nbsp;&nbsp;<span class="grey">Pass: 1</span>&nbsp;&nbsp;<span class="red">Waiting: 1</span></div>
+<div class="roll" style="left:34px;top:76px;border:2px solid #8a7a50;border-radius:6px">
+<div class="icon"></div><div class="bar"><div class="blue">Robe of the Void</div><div class="timer"><div></div></div></div>
+<div class="rb">🎲</div><div class="rb">💰</div><div class="rb">✕</div></div>
+<div class="lbl" style="left:34px;top:160px">ElvUI roll frame</div>
+<div class="badge" style="left:36px;top:186px"><span class="green">Need: 0</span>&nbsp;&nbsp;<span class="gold">Greed: 3</span>&nbsp;&nbsp;<span class="grey">Pass: 1</span>&nbsp;&nbsp;<span class="red">Waiting: 1</span></div>
+<div class="roll" style="left:34px;top:206px">
+<div class="icon" style="border-color:#1eff00"></div><div class="bar"><div class="unc">Runecloth Belt</div><div class="timer"><div style="width:35%"></div></div></div>
+<div class="rb">🎲</div><div class="rb">💰</div><div class="rb">✕</div></div>
+<div class="callout" style="left:2px;top:52px">1</div>
+
+<div class="win elv rtw" style="left:430px;top:28px">
+<div class="head"><span>Roll Tracker</span><span><span class="small">Clear</span> <span class="x" style="position:static;display:inline-block">✕</span></span></div>
+<div class="body">
+<div><span class="blue">[Robe of the Void]</span> <span class="gold">(in progress)</span></div>
+<div>&nbsp;&nbsp;&nbsp;<span class="green">Need (1):</span> <span class="cls-lock">Shadowbolt</span></div>
+<div>&nbsp;&nbsp;&nbsp;<span class="gold">Greed (2):</span> <span class="cls-mage">Frostina</span>, <span class="cls-pri">Holyhelp</span></div>
+<div>&nbsp;&nbsp;&nbsp;<span class="grey">Pass (1):</span> <span class="cls-war">Tankfred</span></div>
+<div>&nbsp;&nbsp;&nbsp;<span class="red">Waiting (1):</span> <span class="cls-rog">Sneakypete</span></div>
+<div style="height:10px"></div>
+<div><span class="unc">[Runecloth Belt]</span> <span class="green">Winner: <span class="cls-mage">Frostina</span></span></div>
+<div>&nbsp;&nbsp;&nbsp;<span class="gold">Greed (3):</span> <span class="cls-mage">Frostina</span> <span class="white">(91)</span>, <span class="cls-pri">Holyhelp</span> <span class="white">(57)</span>, <span class="cls-lock">Shadowbolt</span> <span class="white">(12)</span></div>
+<div>&nbsp;&nbsp;&nbsp;<span class="grey">Pass (2):</span> <span class="cls-war">Tankfred</span>, <span class="cls-rog">Sneakypete</span></div>
+<div style="height:10px"></div>
+<div><span class="white">[Pattern: Runecloth Bag]</span> <span class="grey">Everyone passed</span></div>
+<div>&nbsp;&nbsp;&nbsp;<span class="grey">Pass (5):</span> <span class="cls-war">Tankfred</span>, <span class="cls-mage">Frostina</span>, <span class="cls-pri">Holyhelp</span>, <span class="cls-lock">Shadowbolt</span>, <span class="cls-rog">Sneakypete</span></div>
+</div></div>
+<div class="callout" style="left:416px;top:18px">2</div>
+<div class="caption" style="position:absolute;right:20px;bottom:10px">Illustration – not an in-game screenshot. Player names are made up.</div>
+</div></body></html>

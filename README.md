@@ -1,74 +1,195 @@
-# WoW Forever addons
+# WoW Forever Addons
 
-## ProfessionProfit
+Two small, lightweight addons for **WoW Forever**:
 
-Lists the **most profitable things you can craft** with the recipes your character has
-actually learned, based on prices from **Forever Guide**'s auction house scan.
+| Addon | What it does | Command |
+|---|---|---|
+| [**ProfessionProfit**](#-professionprofit) | Ranks the recipes **you know** by how much gold they make, using **Forever Guide**'s auction house scan | `/pp` |
+| [**RollTracker**](#-rolltracker) | Shows what everyone picked – **Need, Greed or Pass** – on every drop. Works **with or without ElvUI** | `/rt` |
 
-### Installation
-1. Copy the `ProfessionProfit` folder to `World of Warcraft/<client>/Interface/AddOns/`.
-2. Start the game. If the addon shows as "out of date", tick *Load out of date AddOns*.
+> [!NOTE]
+> The pictures in this README are **illustrations** of the addon windows, not in-game screenshots.
+> Prices and player names in them are example values.
 
-### Usage
-1. **Open each profession window once** (Tailoring, Alchemy, ...). The addon then saves
-   which recipes the character knows. Do it again when you learn new recipes.
-2. **Scan the AH with Forever Guide** as usual.
-3. Type **`/pp`** to show the list, sorted by highest profit first.
-   Hover a row to see reagents and costs. Shift-click to search for the item on the AH
-   (or link it in chat).
+---
 
-Profit = AH price × amount made per craft × 0.95 (the AH's 5 % cut) − reagent cost.
-Reagents are costed at the cheaper of the AH price and the vendor price. The addon learns
-vendor prices by itself when you open a vendor (e.g. thread and vials).
-Recipes where a reagent has no price, and items with no AH price (soulbound), are not shown.
+## Contents
 
-### Commands
-| Command | What it does |
-|---|---|
-| `/pp` | Show/hide the list |
-| `/pp min 1g50s` | Only show recipes with at least this much profit |
-| `/pp status` | Shows whether Forever Guide's prices were found and which recipes are saved |
-| `/pp fgdump` | Troubleshooting: shows what Forever Guide's data looks like |
-| `/pp reset` | Forget saved recipes for the character |
+- [Installation](#installation)
+- [💰 ProfessionProfit](#-professionprofit)
+- [🎲 RollTracker](#-rolltracker)
+- [Troubleshooting](#troubleshooting)
+- [Project layout](#project-layout)
 
-### How the Forever Guide connection works
-Forever Guide has no documented API for other addons, so ProfessionProfit finds it by
-itself. First it looks for a price function, e.g. `GetAuctionPrice(itemID)`. Otherwise it
-looks for the table where Forever Guide stores its scanned prices (`[itemID] = price`),
-preferring the table for your realm and faction.
-All AH prices come **only from Forever Guide**. No other AH addons are used.
+---
 
-If `/pp status` says no prices were found even though you have scanned:
-run `/pp fgdump`, do `/reload` and send the contents under `fgdump` in
-`WTF/Account/<account>/SavedVariables/ProfessionProfit.lua`. The connection can then be
-adapted exactly to Forever Guide.
+## Installation
 
-## RollTracker
+1. Download this repository (**Code → Download ZIP**) and unzip it.
+2. Copy the addon folders you want into your AddOns folder:
 
-Shows **what everyone in the group picked – Need, Greed or Pass** (and Disenchant/Transmog
-if the game has them) on every item that drops. Works **with and without ElvUI**.
+   ```
+   World of Warcraft/<client>/Interface/AddOns/
+   ├── ProfessionProfit/
+   └── RollTracker/
+   ```
 
-### Installation
-Copy the `RollTracker` folder to `Interface/AddOns/`.
+   Copy the folders themselves, not the files inside them.
 
-### What you see
-- **A window** that opens by itself when something is up for rolling. It lists each drop
-  with who picked what, roll numbers, who won and who **has not picked yet**.
-  Names are shown in class colors. The window can be moved and resized.
-- **A row of counts above the roll frame itself**, e.g. `Need: 1  Greed: 2  Pass: 1  Waiting: 1`.
-  Hover the row to see the names. This works on both Blizzard's roll frames and ElvUI's.
+3. Start the game (or `/reload`). On the character screen, open **AddOns** and make sure both are ticked.
+   If they show as *out of date*, tick **Load out of date AddOns**.
 
-With ElvUI, ElvUI's look is used (frame, font, buttons). Without ElvUI, regular Blizzard
-frames are used.
+**ProfessionProfit** requires the [Forever Guide](https://www.curseforge.com/wow/addons/forever-guide) addon.
+**RollTracker** has no requirements. ElvUI is optional.
+
+---
+
+## 💰 ProfessionProfit
+
+> *"What should I craft right now to make the most gold?"*
+
+ProfessionProfit takes every recipe your character **has actually learned** and works out its profit
+from **Forever Guide**'s auction house prices. You get one list with the best crafts at the top.
+
+![ProfessionProfit window](docs/images/professionprofit-window.png)
+
+1. **Your recipes, ranked**: only recipes this character knows, best profit first. Item names use quality colors, and `x1.5` means the recipe makes several items on average.
+2. **Profit after the AH cut**: the 5 % auction house cut is already subtracted.
+3. **Hover for details**: hover a row to see the Forever Guide price, each reagent's cost and the total.
+4. **Refresh** after a new Forever Guide scan. The status line shows how many of your recipes are profitable.
 
 ### How it works
-The game writes every choice in loot chat ("X has selected Greed for: [item]").
-RollTracker reads those lines using the game's own localized texts, so it works in every
-language and regardless of which UI shows the roll frames.
+
+![How ProfessionProfit works](docs/images/professionprofit-flow.png)
+
+```
+profit = AH price × amount made × 0.95  −  reagent cost
+```
+
+- **AH prices come only from Forever Guide.** No other AH addon is used.
+- **Reagents** are costed at the cheaper of the Forever Guide price and the **vendor price**. Vendor prices are learned automatically when you open a vendor, so thread, vials, flux and similar reagents get their real cost.
+- Recipes whose result **can't be sold on the AH** (soulbound, no listings) are hidden. So are recipes where a reagent has no price.
+
+### Getting started
+
+1. **Open each profession window once** (Tailoring, Alchemy, Enchanting, …). Your recipes are saved per character. Do it again after you learn new recipes.
+2. **Scan the auction house with Forever Guide.**
+3. Type **`/pp`**.
 
 ### Commands
-| Command | What it does |
+
+| Command | Description |
 |---|---|
-| `/rt` | Show/hide the window |
-| `/rt auto` | Toggle opening the window automatically on rolls |
-| `/rt clear` | Clear the history |
+| `/pp` | Show / hide the list |
+| `/pp min 1g50s` | Only show recipes with at least this much profit (`5g`, `75s`, `1g50s`, …) |
+| `/pp status` | Show whether Forever Guide's prices were found, and which recipes are saved |
+| `/pp fgdump` | Troubleshooting: print what Forever Guide's saved data looks like |
+| `/pp reset` | Forget this character's saved recipes |
+| `/pp help` | List all commands |
+
+**Tips**
+- **Shift-click** a row to search for the item on the AH (or link it in chat when the AH is closed).
+- Use `/pp min 1g` to hide crafts that are barely worth the effort.
+
+---
+
+## 🎲 RollTracker
+
+> *"Who needed on that? Is anyone still choosing?"*
+
+RollTracker shows **what everyone in your group picked** on each drop, while the roll is still going.
+
+![RollTracker](docs/images/rolltracker.png)
+
+1. **Counts on the roll frame itself**: `Need · Greed · Pass · Waiting` above every roll frame. It works on **Blizzard's** roll frames and on **ElvUI's**. Hover the counts to see the names.
+2. **The Roll Tracker window** opens automatically when something drops. It shows for each item:
+   - who picked **Need / Greed / Pass** (and Disenchant / Transmog if the game has them),
+   - who is **still waiting** to choose,
+   - the **roll numbers**, highest first,
+   - the **winner**, or *Everyone passed*.
+
+   Names are shown in class colors. The window can be moved, resized (drag the bottom-right corner) and closed with ✕.
+
+### With or without ElvUI
+
+| | Without ElvUI | With ElvUI |
+|---|---|---|
+| Choice tracking | ✅ | ✅ |
+| Counts on roll frames | ✅ Blizzard frames | ✅ ElvUI frames |
+| Window style | Blizzard tooltip style | ElvUI style (frame, font, buttons) |
+
+RollTracker reads the loot messages the game already prints in chat, like *"Frostina has selected Greed for: [Runecloth Belt]"*.
+It uses the game's own translated texts, so it works in **any client language** and with **any UI** that shows the roll frames.
+
+### Commands
+
+| Command | Description |
+|---|---|
+| `/rt` | Show / hide the window |
+| `/rt auto` | Toggle opening the window automatically when a roll starts |
+| `/rt clear` | Clear the roll history (the window's **Clear** button does the same) |
+
+The last 15 drops are kept.
+
+---
+
+## Troubleshooting
+
+<details>
+<summary><b>ProfessionProfit says "No prices found from Forever Guide"</b></summary>
+
+1. Make sure Forever Guide is enabled, then do a full auction house scan with it.
+2. Press **Refresh** in the ProfessionProfit window, or type `/pp status`.
+3. If it still can't find the prices: Forever Guide has no public API for other addons, so ProfessionProfit
+   looks for its saved price data by itself, and Forever Guide may store it in a way it doesn't recognise yet.
+   Run `/pp fgdump`, then `/reload`, and open an issue with the `fgdump` section from:
+
+   ```
+   WTF/Account/<account>/SavedVariables/ProfessionProfit.lua
+   ```
+
+   The connection can then be adapted exactly to Forever Guide.
+</details>
+
+<details>
+<summary><b>ProfessionProfit says "No recipes saved"</b></summary>
+
+Open each profession window once. The game only provides the recipe list while that window is open.
+</details>
+
+<details>
+<summary><b>A recipe I know is missing from the list</b></summary>
+
+It is hidden when the crafted item has no Forever Guide price (not listed on the AH, or soulbound),
+when a reagent has no price, or when its profit is below your `/pp min` value.
+Hover rows and check `/pp status` to see what is known.
+</details>
+
+<details>
+<summary><b>RollTracker only shows the winner, or nothing</b></summary>
+
+RollTracker relies on the loot messages in chat. Make sure loot messages are enabled in the chat tab:
+right-click the tab → **Settings** → tick **Loot**.
+If it still doesn't work, please open an issue and paste a few loot lines from chat.
+</details>
+
+---
+
+## Project layout
+
+```
+ProfessionProfit/
+├── ProfessionProfit.toc
+├── Core.lua       saved data, events, slash commands
+├── Recipes.lua    reads learned recipes from the profession windows
+├── Prices.lua     Forever Guide prices + profit calculation
+├── Vendor.lua     learns vendor prices for reagents
+└── UI.lua         the profit list window
+RollTracker/
+├── RollTracker.toc
+├── Core.lua       parses loot chat, tracks choices per drop
+└── UI.lua         window, roll frame counts, ElvUI styling
+docs/
+├── images/        pictures used in this README
+└── mockups/       HTML sources for the pictures (node shot.js <out-dir>)
+```

@@ -1,0 +1,14 @@
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1b2230;font:13px/1.35 "Trebuchet MS",Verdana,sans-serif;color:#fff;padding:24px;display:inline-block}
+.scene{position:relative;background:radial-gradient(ellipse at 30% 20%,#3a4a3a 0,#1d2a24 45%,#121a17 100%);padding:28px;border-radius:6px}
+.win{background:rgba(8,8,10,.92);border:2px solid #6b6b6b;border-radius:6px;box-shadow:0 0 0 1px #000,0 8px 24px rgba(0,0,0,.6)}
+.win.elv{border:1px solid #000;border-radius:0;box-shadow:0 0 0 1px #3a3a3a,0 8px 24px rgba(0,0,0,.6);background:rgba(12,12,12,.85)}
+.title{background:linear-gradient(#3a2a10,#1a1206);border-bottom:1px solid #5a4a20;color:#ffd100;text-align:center;padding:5px 10px;font-weight:bold;position:relative}
+.x{position:absolute;right:6px;top:3px;width:18px;height:18px;border-radius:3px;background:#7a1010;border:1px solid #c33;color:#fff;font-size:11px;line-height:16px;text-align:center}
+.g{color:#ffd700}.s{color:#c7c7cf}.c{color:#eda55f}
+.gold{color:#ffd100}.green{color:#33ff33}.grey{color:#999}.red{color:#ff6666}.blue{color:#0070dd}.unc{color:#1eff00}.white{color:#fff}.purple{color:#b37fff}
+.btn{display:inline-block;background:linear-gradient(#8a1a10,#4a0a05);border:1px solid #c8a040;color:#ffd100;padding:3px 14px;border-radius:3px;font-size:12px}
+.tip{position:absolute;background:rgba(10,10,20,.95);border:2px solid #4a4a6a;border-radius:5px;padding:8px 10px;font-size:12px;min-width:270px;box-shadow:0 4px 14px rgba(0,0,0,.7)}
+.row2{display:flex;justify-content:space-between;gap:18px}
+.callout{position:absolute;background:#ffd100;color:#111;font-weight:bold;border-radius:50%;width:24px;height:24px;text-align:center;line-height:24px;font-size:13px;box-shadow:0 0 0 2px #111}
+.caption{color:#aab;font-size:11px;text-align:right;margin-top:8px;font-style:italic}
